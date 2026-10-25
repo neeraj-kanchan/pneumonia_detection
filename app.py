@@ -3,6 +3,7 @@ import tensorflow as tf
 import numpy as np
 import cv2
 from PIL import Image
+import pydicom  # <--- Make sure this line is here!
 
 # Page Configuration
 st.set_page_config(
