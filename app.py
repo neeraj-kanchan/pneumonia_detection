@@ -27,8 +27,19 @@ st.write("Upload a chest X-ray image (DICOM or standard image formats like PNG/J
 uploaded_file = st.file_uploader("Choose an X-ray image...", type=["jpg", "jpeg", "png", "dcm"])
 
 if uploaded_file is not None:
-    # Display uploaded image
-    image = Image.open(uploaded_file).convert('L') # Convert to grayscale
+    # Check if the uploaded file is a DICOM file
+    if uploaded_file.name.endswith('.dcm'):
+        # Read the DICOM file using pydicom
+        dicom_data = pydicom.dcmread(uploaded_file)
+        image_array = dicom_data.pixel_array
+        
+        # Normalize the pixel array to 0-255 and convert to PIL Image
+        image_array = ((image_array - image_array.min()) / (image_array.max() - image_array.min()) * 255).astype(np.uint8)
+        image = Image.fromarray(image_array).convert('L')
+    else:
+        # Standard image formats (PNG, JPG)
+        image = Image.open(uploaded_file).convert('L')
+        
     st.image(image, caption="Uploaded X-Ray Image", use_column_width=True)
     
     if st.button("Run Prediction"):
